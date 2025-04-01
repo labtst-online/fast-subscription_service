@@ -11,7 +11,8 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..
 sys.path.insert(0, project_root)
 
 from app.core.config import settings  # noqa: E402
-from app.models.subscription import SQLModel  # noqa: E402
+from app.models.subscription import Subscription  # noqa: E402
+from app.models.tier import Tier  # noqa: E402
 
 config = context.config
 
@@ -19,7 +20,7 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 
-target_metadata = SQLModel.metadata
+target_metadata = [Subscription.metadata, Tier.metadata]
 
 
 def run_migrations_offline() -> None:
