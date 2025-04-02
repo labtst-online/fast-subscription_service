@@ -1,16 +1,19 @@
-from app.models.subscription import SubscriptionBase
+import uuid
+from datetime import datetime
+
+from app.models.subscription import SubscriptionBase, SubscriptionStatus
 
 
 class SubscriptionCreate(SubscriptionBase):
-    tier_id: str
+    tier_id: uuid.UUID
 
 
 class SubscriptionRead(SubscriptionBase):
-    id: str
-    supporter_id: str
-    tier_id: str
-    status: str
-    started_at: str | None = None
-    expires_at: str | None = None
-    created_at: str | None = None
-    updated_at: str | None = None
+    id: uuid.UUID
+    supporter_id: uuid.UUID
+    tier_id: uuid.UUID
+    status: SubscriptionStatus
+    started_at: datetime | None
+    expires_at: datetime | None
+    created_at: datetime | None
+    updated_at: datetime | None
