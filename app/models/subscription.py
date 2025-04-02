@@ -1,8 +1,16 @@
 import datetime
+import enum
 import uuid
 
 from sqlalchemy import Column, DateTime, Enum, func
 from sqlmodel import Field, SQLModel
+
+
+class SubscriptionStatus(enum.Enum):
+    ACTIVE = "active"
+    INACTIVE = "inactive"
+    PANDING = "pending"
+    CANCELLED = "cancelled"
 
 
 class SubscriptionBase(SQLModel):
@@ -15,7 +23,7 @@ class Subscription(SubscriptionBase, table=True):
     tier_id: uuid.UUID = Field(index=True, foreign_key="tier.id")
     status: str = Field(
         sa_column=Column(
-            Enum("active", "inactive", "pending", "cancelled")
+            Enum(SubscriptionStatus)
         )
     )
     started_at: datetime.datetime | None = Field(
