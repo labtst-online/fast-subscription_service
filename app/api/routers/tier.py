@@ -2,7 +2,7 @@ import logging
 import uuid
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import select
@@ -29,7 +29,7 @@ async def create_tier(
     logger.info(f"Creating new tier with creator_id: {creator_id}")
     create_data = tier_create.model_dump()
     db_tier = Tier(**create_data, creator_id=creator_id)
-    session.add(create_data)
+    session.add(db_tier)
     tier_to_return = db_tier
 
     try:
@@ -169,6 +169,7 @@ async def delete_tier(
     try:
         await session.commit()
         logger.info(f"Successfully deleted tier_id: {tier_id}")
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
     except Exception as e:
         await session.rollback()
         logger.exception(f"Error deleting tier_id: {tier_id} - {e}")
@@ -193,7 +194,7 @@ async def get_all_tiers_by_creator(
     statement = (
         select(Tier)
         .where(Tier.creator_id == creator_id)
-        .order_by(Tier.created_at) # Usually want newest first
+        .order_by(Tier.created_at.desc()) # Usually want newest first
         .offset(offset)
         .limit(limit)
     )
