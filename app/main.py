@@ -38,7 +38,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Profile Service",
+    title="Subscription Service",
     description="Handles user profiles.",
     version="0.1.0",
     lifespan=lifespan
@@ -87,7 +87,7 @@ if __name__ == "__main__":
     uvicorn.run(
        "app.main:app",
        host="0.0.0.0",
-       port=8001, # Or load from config
+       port=8003, # Or load from config
        reload=(settings.APP_ENV == "development"),
        log_level="info"
    )
