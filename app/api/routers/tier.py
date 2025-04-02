@@ -17,13 +17,14 @@ router = APIRouter()
 
 
 @router.post(
-    "/tiers", response_model=TierRead,
+    "/tiers",
+    response_model=TierRead,
     summary="Create a new tier",
     description="Create a new tier with the specified details.",
 )
 async def create_tier(
     tier_create: TierCreate,
-    creator_id: CurrentUserUUID = Depends(CurrentUserUUID),
+    creator_id: CurrentUserUUID,
     session: AsyncSession = Depends(get_async_session),
 ):
     logger.info(f"Creating new tier with creator_id: {creator_id}")
@@ -86,8 +87,8 @@ async def get_tier(
 async def update_tier(
     tier_id: uuid.UUID,
     tier_update: TierUpdate,
-    session: AsyncSession = Depends(get_async_session),
-    current_user: CurrentUserUUID = Depends(CurrentUserUUID),
+    current_user: CurrentUserUUID,
+    session: AsyncSession = Depends(get_async_session)
 ):
     statement = select(Tier).where(Tier.id == tier_id)
     result = await session.execute(statement)
@@ -142,8 +143,8 @@ async def update_tier(
 )
 async def delete_tier(
     tier_id: uuid.UUID,
-    session: AsyncSession = Depends(get_async_session),
-    current_user: CurrentUserUUID = Depends(CurrentUserUUID),
+    current_user: CurrentUserUUID,
+    session: AsyncSession = Depends(get_async_session)
 ):
     statement = select(Tier).where(Tier.id == tier_id)
     result = await session.execute(statement)

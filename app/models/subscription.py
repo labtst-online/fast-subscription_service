@@ -9,7 +9,7 @@ from sqlmodel import Field, SQLModel
 class SubscriptionStatus(enum.Enum):
     ACTIVE = "active"
     INACTIVE = "inactive"
-    PANDING = "pending"
+    PENDING = "pending"
     CANCELLED = "cancelled"
 
 
@@ -18,6 +18,7 @@ class SubscriptionBase(SQLModel):
 
 
 class Subscription(SubscriptionBase, table=True):
+    __tablename__ = "subscription"
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     supporter_id: uuid.UUID = Field(index=True, nullable=False)
     tier_id: uuid.UUID = Field(index=True, foreign_key="tier.id")
@@ -28,7 +29,7 @@ class Subscription(SubscriptionBase, table=True):
     )
     started_at: datetime.datetime | None = Field(
         sa_column = Column(
-            DateTime(timezone=True), nullable=False, server_factory=func.now()
+            DateTime(timezone=True), nullable=False, server_default=func.now()
         )
     )
     expires_at: datetime.datetime | None = Field(

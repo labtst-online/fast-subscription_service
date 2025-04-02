@@ -5,11 +5,11 @@ from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.routers.internal import router as internal_router
+from app.api.routers.subscription import router as subscription_router
+from app.api.routers.tier import router as tier_router
 from app.models.tier import Tier
 
-from .api.routers.internal import router as internal_router
-from .api.routers.subscription import router as subscription_router
-from .api.routers.tier import router as tier_router
 from .core.config import settings
 from .core.database import async_engine, get_async_session
 
@@ -45,7 +45,7 @@ app = FastAPI(
 )
 
 
-app.include_router(tier_router, prefix="/profiles", tags=["Profiles"])
+app.include_router(tier_router, prefix="/tier", tags=["Tier"])
 
 app.include_router(subscription_router, prefix="/subscriptions", tags=["Subscriptions"])
 
@@ -79,7 +79,7 @@ async def test_db_connection(
 @app.get("/", summary="Health Check", tags=["Health"])
 async def health_check():
     """Basic health check endpoint."""
-    return {"status": "ok", "service": "Profile Service"}
+    return {"status": "ok", "service": "Subscription Service"}
 
 
 if __name__ == "__main__":
