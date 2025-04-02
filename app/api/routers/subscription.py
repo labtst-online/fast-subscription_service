@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-router.post(
+@router.post(
     "/subscriptions",
     response_model=SubscriptionRead,
     summary="Create a new subscription",
@@ -26,7 +26,7 @@ router.post(
 )
 async def create_new_subscription(
     subscription_create: SubscriptionCreate,
-    supporter_id: CurrentUserUUID = Depends(CurrentUserUUID),
+    supporter_id: CurrentUserUUID,
     session: AsyncSession = Depends(get_async_session),
 ):
     logger.info(
@@ -63,9 +63,8 @@ async def create_new_subscription(
         .limit(1)
     )
     existing_sub_result = await session.execute(existing_sub_statement)
-    existing_sub = existing_sub_result.scalar_one_or_none
 
-    if existing_sub:
+    if existing_sub_result.scalar_one_or_none() is not None:
         logger.info(f"User {supporter_id} already actively subscribed to creator {creator_id}")
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -79,7 +78,7 @@ async def create_new_subscription(
         started_at=datetime.datetime.now(datetime.UTC),
         expires_at=datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=30)
     )
-    await session.add(db_subscription)
+    session.add(db_subscription)
     sub_to_return = db_subscription
 
     try:

@@ -4,9 +4,8 @@ import logging
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
-from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlmodel import exists, select
+from sqlmodel import select
 
 from app.core.database import get_async_session
 from app.models.subscription import Subscription, SubscriptionStatus
@@ -17,30 +16,31 @@ router = APIRouter()
 
 
 @router.get(
-    "/internal/check-access",
+    "/check-access",
     status_code=status.HTTP_200_OK,
-    summary="Check Access",
-    description="Check if the user has access to the internal API.",
+    summary="Check user access to creator content (Internal)",
+    description="Checks if a supporter has an active subscription to any tier of creator.",
 )
-async def check_access(
+async def check_access_internal(
     supporter_id: uuid.UUID = Query(...),
     creator_id: uuid.UUID = Query(...),
     session: AsyncSession = Depends(get_async_session),
-) -> JSONResponse:
+):
+    logger.debug(f"Internal access check: Supporter {supporter_id} for Creator {creator_id}")
 
-    logger.info(f"Checking access {supporter_id} to content {creator_id}")
     statement = (
-        select(exists().where(
+        select(1)
+        .select_from(Subscription)
+        .join(Tier, Subscription.tier_id == Tier.id)
+        .where(
             (Subscription.supporter_id == supporter_id) &
             (Tier.creator_id == creator_id) &
             (Subscription.status == SubscriptionStatus.ACTIVE) &
             (Subscription.expires_at > datetime.datetime.now(datetime.UTC))
-        ))
-        .select_from(Subscription) # Explicitly state the FROM clause
-        .join(Tier, Subscription.tier_id == Tier.id) # Perform the join
+        )
     )
     result = await session.execute(statement)
-    has_access = result.scalar()
+    has_access = result.scalar()  # Returns True or False
 
     if has_access:
         logger.debug(f"Access GRANTED for Supporter {supporter_id} to Creator {creator_id}")
