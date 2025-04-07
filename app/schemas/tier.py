@@ -12,6 +12,7 @@ class TierUpdate(TierBase):
     name: str | None = None
     description: str | None = None
     price: float | None = None
+    currency: str | None = None
 
 
 class TierRead(TierBase):

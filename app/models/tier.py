@@ -9,6 +9,7 @@ class TierBase(SQLModel):
     name: str = Field(index=True, max_length=100)
     description: str | None = Field(default=None, sa_column=Column(TEXT))
     price: float = Field(default=None, ge=0.0)
+    currency: str = Field(default="usd", nullable=False, max_length=3)
 
 
 class Tier(TierBase, table=True):
