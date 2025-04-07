@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from contextlib import asynccontextmanager
 
@@ -8,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.routers.internal import router as internal_router
 from app.api.routers.subscription import router as subscription_router
 from app.api.routers.tier import router as tier_router
+from app.core.kafka_client import kafka_client
 from app.models.tier import Tier
 
 from .core.config import settings
@@ -28,13 +30,16 @@ async def lifespan(app: FastAPI):
             logger.info("Database connection successful during startup.")
     except Exception as e:
         logger.error(f"Database connection failed during startup: {e}")
-
+    asyncio.create_task(kafka_client.consume_messages(
+        topic=settings.KAFKA_PAYMENT_EVENTS_TOPIC
+    ))
     yield
 
     logger.info("Application shutdown...")
-    # Close the engine connections pool
     await async_engine.dispose()
     logger.info("Database engine disposed.")
+    kafka_client.close_consumer()
+    logger.info("Kafka Consumer disposed.")
 
 
 app = FastAPI(
