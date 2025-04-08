@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     POSTGRES_DB: str
 
     AUTH_SERVICE_URL: HttpUrl = "http://auth_service:8000"
+    PAYMENT_SERVICE_URL: str = "http://payment_service:8004"
 
     KAFKA_BOOTSTRAP_SERVERS: str = "kafka:9092"
     KAFKA_PAYMENT_EVENTS_TOPIC: str = "payment_events"
