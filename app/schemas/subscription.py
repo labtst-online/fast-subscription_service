@@ -17,8 +17,3 @@ class SubscriptionRead(SubscriptionBase):
     expires_at: datetime | None
     created_at: datetime | None
     updated_at: datetime | None
-
-
-class PaymentInitiationResponse(SubscriptionBase):
-    session_id: str
-    checkout_url: str
