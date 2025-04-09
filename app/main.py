@@ -30,9 +30,7 @@ async def lifespan(app: FastAPI):
             logger.info("Database connection successful during startup.")
     except Exception as e:
         logger.error(f"Database connection failed during startup: {e}")
-    asyncio.create_task(kafka_client.consume_messages(
-        topic=settings.KAFKA_PAYMENT_EVENTS_TOPIC
-    ))
+    asyncio.create_task(kafka_client.consume_messages())
     yield
 
     logger.info("Application shutdown...")
