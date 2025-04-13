@@ -2,12 +2,12 @@ import logging
 import uuid
 from typing import Annotated
 
+from auth_lib import CurrentUserUUID
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import select
 
-from app.api.dependencies import CurrentUserUUID
 from app.core.database import get_async_session
 from app.models.tier import Tier
 from app.schemas.tier import TierCreate, TierRead, TierUpdate
