@@ -1,7 +1,7 @@
 import os
 from typing import Any
 
-from pydantic import HttpUrl, PostgresDsn, field_validator
+from pydantic import PostgresDsn, field_validator
 from pydantic_core import MultiHostUrl
 from pydantic_core.core_schema import ValidationInfo
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -20,7 +20,6 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str
 
-    AUTH_SERVICE_URL: HttpUrl = "http://auth_service:8000"
     PAYMENT_SERVICE_URL: str = "http://payment_service:8004"
 
     KAFKA_BOOTSTRAP_SERVERS: str = "kafka:9092"
