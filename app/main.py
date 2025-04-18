@@ -15,8 +15,6 @@ from app.models.tier import Tier
 from .core.config import settings
 from .core.database import async_engine, get_async_session
 
-# Configure logging
-# Basic config, customize as needed (e.g., structured logging)
 logging.basicConfig(level=logging.INFO if settings.APP_ENV == "production" else logging.DEBUG)
 logger = logging.getLogger(__name__)
 
@@ -44,7 +42,7 @@ app = FastAPI(
     title="Subscription Service",
     description="Handles user profiles.",
     version="0.1.0",
-    lifespan=lifespan
+    lifespan=lifespan,
 )
 
 
@@ -56,9 +54,7 @@ app.include_router(internal_router, prefix="/internal", tags=["Internal"])
 
 
 @app.get("/test-db/", summary="Test Database Connection", tags=["Test"])
-async def test_db_connection(
-    session: AsyncSession = Depends(get_async_session)
-):
+async def test_db_connection(session: AsyncSession = Depends(get_async_session)):
     """
     Attempts to retrieve the first tier from the database.
     """
@@ -87,10 +83,11 @@ async def health_check():
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(
-       "app.main:app",
-       host="0.0.0.0",
-       port=8003, # Or load from config
-       reload=(settings.APP_ENV == "development"),
-       log_level="info"
-   )
+        "app.main:app",
+        host="0.0.0.0",
+        port=8003,
+        reload=(settings.APP_ENV == "development"),
+        log_level="info",
+    )

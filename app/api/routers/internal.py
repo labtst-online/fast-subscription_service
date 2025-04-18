@@ -32,10 +32,10 @@ async def check_access_internal(
         .select_from(Subscription)
         .join(Tier, Subscription.tier_id == Tier.id)
         .where(
-            (Subscription.supporter_id == supporter_id) &
-            (Tier.creator_id == creator_id) &
-            (Subscription.status == SubscriptionStatus.ACTIVE) &
-            (Subscription.expires_at > datetime.datetime.now(datetime.UTC))
+            (Subscription.supporter_id == supporter_id)
+            & (Tier.creator_id == creator_id)
+            & (Subscription.status == SubscriptionStatus.ACTIVE)
+            & (Subscription.expires_at > datetime.datetime.now(datetime.UTC))
         )
     )
     result = await session.execute(statement)
@@ -48,5 +48,5 @@ async def check_access_internal(
         logger.debug(f"Access DENIED for Supporter {supporter_id} to Creator {creator_id}")
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="No active subscription found for this creator."
+            detail="No active subscription found for this creator.",
         )
