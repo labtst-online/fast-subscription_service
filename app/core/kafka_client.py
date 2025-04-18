@@ -22,21 +22,24 @@ class SubscriptionHandler:
 
     async def process_subscription(
         self, event: PaymentSucceededEvent, session: AsyncSession
-        ) -> bool:
+    ) -> bool:
         """Process subscription creation or update based on payment event"""
         try:
-            statement = select(Subscription).where(
-                Subscription.supporter_id == event.user_id,
-                Subscription.tier_id == event.tier_id
-            ).with_for_update()
+            statement = (
+                select(Subscription)
+                .where(
+                    Subscription.supporter_id == event.user_id,
+                    Subscription.tier_id == event.tier_id,
+                )
+                .with_for_update()
+            )
 
             result = await session.execute(statement)
             subscription = result.scalar_one_or_none()
 
             if subscription and subscription.status == SubscriptionStatus.ACTIVE:
                 logger.warning(
-                    f"Subscription for user {event.user_id}, "
-                    f"tier {event.tier_id} already ACTIVE"
+                    f"Subscription for user {event.user_id}, tier {event.tier_id} already ACTIVE"
                 )
                 return True
 
@@ -48,10 +51,7 @@ class SubscriptionHandler:
             return False
 
     async def _update_or_create_subscription(
-        self,
-        subscription: Subscription | None,
-        event: PaymentSucceededEvent,
-        session: AsyncSession
+        self, subscription: Subscription | None, event: PaymentSucceededEvent, session: AsyncSession
     ):
         """Update existing or create new subscription"""
         start_time = datetime.datetime.now(datetime.UTC)
@@ -68,7 +68,7 @@ class SubscriptionHandler:
                 tier_id=event.tier_id,
                 status=SubscriptionStatus.ACTIVE,
                 started_at=start_time,
-                expires_at=expiry_time
+                expires_at=expiry_time,
             )
             session.add(subscription)
             logger.info(f"Creating new subscription for user {event.user_id}, tier {event.tier_id}")
@@ -86,7 +86,7 @@ class MessageProcessor:
     async def process_message(self, msg: Message, session: AsyncSession) -> bool:
         """Process a single Kafka message"""
         try:
-            event_data = json.loads(msg.value().decode('utf-8'))
+            event_data = json.loads(msg.value().decode("utf-8"))
             event_type = event_data.get("event_type")
 
             if event_type != "payment.succeeded":
@@ -103,8 +103,8 @@ class MessageProcessor:
 
         except (json.JSONDecodeError, ValidationError) as e:
             logger.error(
-                f"Message validation/parsing error: {e}."
-                f" Message value: {msg.value()}", exc_info=True
+                f"Message validation/parsing error: {e}. Message value: {msg.value()}",
+                exc_info=True,
             )
             return True
         except Exception as e:
@@ -122,10 +122,10 @@ class KafkaConsumer:
     def _initialize_consumer(self) -> Consumer:
         """Initialize and configure Kafka consumer"""
         conf = {
-            'bootstrap.servers': settings.KAFKA_BOOTSTRAP_SERVERS,
-            'group.id': settings.KAFKA_CONSUMER_GROUP_ID,
-            'auto.offset.reset': 'earliest',
-            'enable.auto.commit': False
+            "bootstrap.servers": settings.KAFKA_BOOTSTRAP_SERVERS,
+            "group.id": settings.KAFKA_CONSUMER_GROUP_ID,
+            "auto.offset.reset": "earliest",
+            "enable.auto.commit": False,
         }
         consumer = Consumer(conf)
         consumer.subscribe([settings.KAFKA_PAYMENT_EVENTS_TOPIC])
@@ -186,8 +186,7 @@ class KafkaClient:
                         processed_successfully = await self.processor.process_message(msg, session)
                 except Exception as e:
                     logger.exception(
-                        f"Error managing session scope for message"
-                        f" at offset {msg.offset()}: {e}"
+                        f"Error managing session scope for message at offset {msg.offset()}: {e}"
                     )
                     processed_successfully = False
 
