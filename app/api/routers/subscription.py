@@ -4,11 +4,11 @@ import uuid
 from typing import Annotated
 
 import httpx
+from auth_lib.auth import CurrentUserUUID
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import select
 
-from app.api.dependencies import CurrentUserUUID
 from app.core.database import get_async_session
 from app.models.subscription import Subscription, SubscriptionStatus
 from app.models.tier import Tier
@@ -39,18 +39,14 @@ async def create_new_subscription(
 
     if not tier:
         logger.info(f"Tier not found: {subscription_create.tier_id}")
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Tier not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tier not found")
 
     creator_id = tier.creator_id
     # Prevent self-subscription
     if creator_id == supporter_id:
         logger.info(f"User {supporter_id} attempted to self-subscribe to tier {tier.id}")
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Cannot subscribe to your own tier"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Cannot subscribe to your own tier"
         )
 
     # Prevent multiple active subscription to the same creator
@@ -69,7 +65,7 @@ async def create_new_subscription(
         logger.info(f"User {supporter_id} already actively subscribed to creator {creator_id}")
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="Already actively subscription to this creator"
+            detail="Already actively subscription to this creator",
         )
     # payment_service_url = f"{settings.PAYMENT_SERVICE_URL}/payment/checkout-sessions"
     payment_service_url = "http://payment_service:8004/payment/checkout-session"
@@ -85,8 +81,7 @@ async def create_new_subscription(
             f"Authorization header missing for user {supporter_id}. Cannot call Payment Service."
         )
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Authentication token not found."
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication token not found."
         )
 
     async with httpx.AsyncClient() as client:
@@ -103,7 +98,7 @@ async def create_new_subscription(
 
             return PaymentInitiationResponse(
                 session_id=payment_init_data.get("session_id"),
-                checkout_url=payment_init_data.get("checkout_url")
+                checkout_url=payment_init_data.get("checkout_url"),
             )
 
         except httpx.HTTPStatusError as e:
@@ -116,19 +111,19 @@ async def create_new_subscription(
                 )
                 raise HTTPException(
                     status_code=status.HTTP_502_BAD_GATEWAY,
-                    detail=f"Failed to initiate payment: {error_detail}"
+                    detail=f"Failed to initiate payment: {error_detail}",
                 )
         except httpx.RequestError as e:
             logger.error(f"Could not connect to Payment Service at {payment_service_url}: {e}")
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-                detail="Payment service is unavailable."
+                detail="Payment service is unavailable.",
             )
         except Exception as e:
             logger.exception(f"Unexpected error calling Payment Service: {e}", exc_info=True)
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="An unexpected error occurred while initiating payment."
+                detail="An unexpected error occurred while initiating payment.",
             )
 
 

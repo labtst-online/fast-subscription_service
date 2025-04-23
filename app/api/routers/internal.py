@@ -1,4 +1,3 @@
-# VERY IMPORTANT LOGIC
 import datetime
 import logging
 import uuid
@@ -33,24 +32,21 @@ async def check_access_internal(
         .select_from(Subscription)
         .join(Tier, Subscription.tier_id == Tier.id)
         .where(
-            (Subscription.supporter_id == supporter_id) &
-            (Tier.creator_id == creator_id) &
-            (Subscription.status == SubscriptionStatus.ACTIVE) &
-            (Subscription.expires_at > datetime.datetime.now(datetime.UTC))
+            (Subscription.supporter_id == supporter_id)
+            & (Tier.creator_id == creator_id)
+            & (Subscription.status == SubscriptionStatus.ACTIVE)
+            & (Subscription.expires_at > datetime.datetime.now(datetime.UTC))
         )
     )
     result = await session.execute(statement)
-    has_access = result.scalar()  # Returns True or False
+    has_access = result.scalar()
 
     if has_access:
         logger.debug(f"Access GRANTED for Supporter {supporter_id} to Creator {creator_id}")
-        # Return simple 200 OK by default if access is granted
-        # Optionally: return {"has_access": True}
         return Response(status_code=status.HTTP_200_OK)
     else:
         logger.debug(f"Access DENIED for Supporter {supporter_id} to Creator {creator_id}")
-        # Raise 404 (or 403) if no active subscription is found
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, # Or 403 Forbidden
-            detail="No active subscription found for this creator."
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No active subscription found for this creator.",
         )
