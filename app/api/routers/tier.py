@@ -2,12 +2,12 @@ import logging
 import uuid
 from typing import Annotated
 
+from auth_lib.auth import CurrentUserUUID
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import select
 
-from app.api.dependencies import CurrentUserUUID
 from app.core.database import get_async_session
 from app.models.tier import Tier
 from app.schemas.tier import TierCreate, TierRead, TierUpdate
@@ -64,16 +64,13 @@ async def get_tier(
     tier_id: uuid.UUID,
     session: AsyncSession = Depends(get_async_session),
 ):
-    statement = select(Tier).where(Tier.id==tier_id)
+    statement = select(Tier).where(Tier.id == tier_id)
     result = await session.execute(statement)
     tier = result.scalar_one_or_none()
 
     if not tier:
         logger.info(f"The tier not found for tier_id: {tier_id}")
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Tier not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tier not found")
     logger.info(f"Tier found for tier_id: {tier_id}")
     return tier
 
@@ -88,7 +85,7 @@ async def update_tier(
     tier_id: uuid.UUID,
     tier_update: TierUpdate,
     current_user: CurrentUserUUID,
-    session: AsyncSession = Depends(get_async_session)
+    session: AsyncSession = Depends(get_async_session),
 ):
     statement = select(Tier).where(Tier.id == tier_id)
     result = await session.execute(statement)
@@ -96,16 +93,13 @@ async def update_tier(
 
     if not db_tier:
         logger.info(f"The tier not found for tier_id: {tier_id}")
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Tier not found."
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tier not found.")
 
     if not db_tier.creator_id == current_user:
         logger.info(f"You don't have permissins to edit tier with tier_id: {tier_id}")
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="It seems you don't have enough permissions to edit this tier."
+            detail="It seems you don't have enough permissions to edit this tier.",
         )
 
     logger.info(f"Updating tier for tier_id: {tier_id}")
@@ -144,7 +138,7 @@ async def update_tier(
 async def delete_tier(
     tier_id: uuid.UUID,
     current_user: CurrentUserUUID,
-    session: AsyncSession = Depends(get_async_session)
+    session: AsyncSession = Depends(get_async_session),
 ):
     statement = select(Tier).where(Tier.id == tier_id)
     result = await session.execute(statement)
@@ -152,16 +146,13 @@ async def delete_tier(
 
     if not tier_to_delete:
         logger.info(f"The tier not found for tier_id: {tier_id}")
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Tier not found."
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tier not found.")
 
     if not tier_to_delete.creator_id == current_user:
         logger.info(f"You don't have permissins to edit tier with tier_id: {tier_id}")
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="It seems you don't have enough permissions to edit this tier."
+            detail="It seems you don't have enough permissions to edit this tier.",
         )
 
     logger.info(f"Deleting tier with tier_id: {tier_id}")
@@ -195,7 +186,7 @@ async def get_all_tiers_by_creator(
     statement = (
         select(Tier)
         .where(Tier.creator_id == creator_id)
-        .order_by(Tier.created_at.desc()) # Usually want newest first
+        .order_by(Tier.created_at.desc())  # Usually want newest first
         .offset(offset)
         .limit(limit)
     )

@@ -1,15 +1,16 @@
 import os
 from typing import Any
 
-from pydantic import HttpUrl, PostgresDsn, field_validator
+from pydantic import PostgresDsn, field_validator
 from pydantic_core import MultiHostUrl
 from pydantic_core.core_schema import ValidationInfo
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), '.env')
+env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), ".env")
+
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=env_path, extra='ignore')
+    model_config = SettingsConfigDict(env_file=env_path, extra="ignore")
 
     APP_ENV: str = "development"
 
@@ -20,7 +21,6 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str
 
-    AUTH_SERVICE_URL: HttpUrl = "http://auth_service:8000"
     PAYMENT_SERVICE_URL: str = "http://payment_service:8004"
 
     KAFKA_BOOTSTRAP_SERVERS: str = "kafka:9092"
@@ -33,9 +33,7 @@ class Settings(BaseSettings):
     @classmethod
     def assemble_async_db_connection(cls, v: str | None, info: ValidationInfo) -> Any:
         if isinstance(v, str):
-            # If the URI is already provided as a string, use it directly
             return v
-        # Otherwise, build it from components
         values = info.data
         return MultiHostUrl.build(
             scheme="postgresql+asyncpg",

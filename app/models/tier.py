@@ -17,12 +17,8 @@ class Tier(TierBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     creator_id: uuid.UUID = Field(index=True, nullable=False)
     created_at: datetime.datetime | None = Field(
-        sa_column = Column(
-            DateTime(timezone=True), server_default=func.now()
-        ),
+        sa_column=Column(DateTime(timezone=True), server_default=func.now()),
     )
     updated_at: datetime.datetime | None = Field(
-        sa_column=Column(
-            DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
-        ),
+        sa_column=Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now()),
     )
