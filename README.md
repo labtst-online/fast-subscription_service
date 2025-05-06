@@ -1,6 +1,6 @@
 # FastBoosty – Subscription Service
 
-The Subscription Service is responsible for managing user contents. It is part of the **FastBoosty** app.
+The Subscription Service is responsible for managing user subscriptions. It is part of the **FastBoosty** app.
 
 ## Tech Stack
 
@@ -50,4 +50,4 @@ GitHub Actions workflow runs ruff formater check on every push and pull request 
 
 ## License
 
-The Fastboosty Profile Service is licensed under the terms of the MIT license.
+The Fastboosty Subscription Service is licensed under the terms of the MIT license.
