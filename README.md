@@ -7,7 +7,7 @@ The Subscription Service is responsible for managing user contents. It is part o
 - **FastAPI** – Web framework
 - **PostgreSQL** – Relational database
 - **Docker** – Containerization
-- **GitHub Actions** – Continuous Integration (CI)
+- **GitHub Actions** – Continuous Integration and Continuous Delivery
 
 ## API Endpoints
 
@@ -44,10 +44,11 @@ docker-compose up --build
 ```
 
 
-## GitHub Actions(CI)
+## GitHub Actions (CI, CD)
 
-GitHub Actions workflow runs ruff formater check on every push and pull request to the main and develop branches.
+* Continuous Integration workflow runs tests and ruff formater check on every push and pull request to the main and develop branches.
+* Continuous Delivery workflow build and push image to GHCR.
 
 ## License
 
-The Fastboosty Profile Service is licensed under the terms of the MIT license.
+This repository is licensed under the terms of the MIT license.
