@@ -1,6 +1,6 @@
 # FastBoosty – Subscription Service
 
-The Subscription Service is responsible for managing user contents. It is part of the **FastBoosty** app.
+The Subscription Service is responsible for managing user subscriptions. It is part of the **FastBoosty** app.
 
 ## Tech Stack
 
