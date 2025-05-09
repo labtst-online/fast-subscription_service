@@ -6,6 +6,7 @@ The Subscription Service is responsible for managing user subscriptions. It is p
 
 - **FastAPI** – Web framework
 - **PostgreSQL** – Relational database
+- **Kafka** - Message Queue
 - **Docker** – Containerization
 - **GitHub Actions** – Continuous Integration and Continuous Delivery
 
