@@ -1,6 +1,6 @@
-# FastBoosty – Subscription Service
+# Subscription Service
 
-The Subscription Service is responsible for managing user subscriptions. It is part of the **FastBoosty** app.
+The Subscription Service is responsible for managing user subscriptions. It is part of the FastAPI app.
 
 ## Tech Stack
 
@@ -19,16 +19,15 @@ The Subscription Service is responsible for managing user subscriptions. It is p
 - `GET /content/posts/{post_id}` – Retrieve a tier by its unique identifier.
 - `GET /content/users/{user_id}/posts` – Retrieve all tiers associated with a specific creator.
 
-
 ## Getting Started
 
-> This service depends on the `auth_service`. It's recommended to run the full system using [`fastboosty-deployment`](https://github.com/fotapol/fastboosty-deployment).
+> This service depends on the `auth_service`. It's recommended to run the full system using [`fast-deployment`](https://github.com/labtst-online/fast-deployment).
 
 ### 1. Clone repository
 
 ```bash
-git clone https://github.com/fotapol/fastboosty-subscription_service.git
-cd fastboosty-subscription_service
+git clone https://github.com/labtst-online/fast-subscription_service.git
+cd fast-subscription_service
 ```
 
 ### 2. Configure
@@ -36,14 +35,13 @@ cd fastboosty-subscription_service
 ```bash
 cp .env.sample .env
 ```
-> Change varibles before `docker-compose up`
+> Change variables before `docker-compose up`
 
 ### 3. Run with Docker
 
 ```bash
 docker-compose up --build
 ```
-
 
 ## GitHub Actions (CI, CD)
 
