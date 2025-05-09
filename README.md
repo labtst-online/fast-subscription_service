@@ -22,13 +22,13 @@ The Subscription Service is responsible for managing user subscriptions. It is p
 
 ## Getting Started
 
-> This service depends on the `auth_service`. It's recommended to run the full system using [`fastboosty-deployment`](https://github.com/fastboosty/fastboosty-deployment).
+> This service depends on the `auth_service`. It's recommended to run the full system using [`fastboosty-deployment`](https://github.com/fotapol/fastboosty-deployment).
 
 ### 1. Clone repository
 
 ```bash
-git clone https://github.com/fastboosty/fastboosty-subscription.git
-cd fastboosty-subscription
+git clone https://github.com/fotapol/fastboosty-subscription_service.git
+cd fastboosty-subscription_service
 ```
 
 ### 2. Configure
